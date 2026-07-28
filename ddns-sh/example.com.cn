@@ -1,0 +1,19 @@
+# 把本配置文件的文件名请重命名成你的域名（建议新建一份）
+# 把引号及引号内的字符串替换为你专属的值（无需引号包裹）
+# 详细说明：查阅 HAN-workspace/auto-ddns 仓库(GITEE/GITHUB同名)
+[RAM]
+aliyun_ID=＂阿里云的 AccessKey ID＂
+aliyun_SE=＂阿里云的 AccessKey Secret＂
+
+[Direct]
+reverseProxy=＂反向代理服务器的 IPv6 地址的后缀＂
+＂主机记录５＂=＂服务器的 IPv6 地址的后缀＂
+
+[IPv6]
+＂主机记录１＂
+＂主机记录２＂
+
+[IPv4]
+＂主机记录１＂
+＂主机记录３＂
+＂主机记录４＂

@@ -1,0 +1,9 @@
+# 忽略 github 与 gitee 目标仓库中的说明文件
+readm*.md
+
+# 忽略 所有域名文件
+*.com
+*.net
+*.xyz
+# 但排除 example.com 
+!example.com
