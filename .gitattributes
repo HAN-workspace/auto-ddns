@@ -3,7 +3,7 @@
 
 # 特别指定 使用 LF
 *.sh text eol=lf
-*.com text eol=lf
+*.com.cn text eol=lf
 *.log text eol=lf
 
 # LICENSE readme文件使用 LF

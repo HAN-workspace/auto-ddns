@@ -5,5 +5,4 @@ readm*.md
 *.com
 *.net
 *.xyz
-# 但排除 example.com 
-!example.com
+
