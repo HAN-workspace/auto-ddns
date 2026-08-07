@@ -57,28 +57,30 @@ function getConfigurationItems(){
     }
 
     # 获取各个 section 的索引
-    ramIndex=$(find_section_index "[RAM]")
+    authIndex=$(find_section_index "[Auth]")
     directIndex=$(find_section_index "[Direct]")
     ipv6Index=$(find_section_index "[IPv6]")
     ipv4Index=$(find_section_index "[IPv4]")
-    
+    EnableCFproxiedIndex=$(find_section_index "[EnableCFproxied]")
     # ========== 输出结果验证 ==========
-    # echo "RAMindex: $ramIndex, ipv4Index: $ipv4Index, ipv6Index: $ipv6Index, directIndex: $directIndex"
+    # echo "Authindex: $authIndex, ipv4Index: $ipv4Index, ipv6Index: $ipv6Index, directIndex: $directIndex，EnableCFproxiedIndex: $EnableCFproxiedIndex"  
 
     # 拆分配置文件内容到不同的数组中
-    ramArray=()    # 声明为数组
+    authArray=()    # 声明为数组
     directArray=()    # 声明为数组
     ipv6Array=()    # 声明为数组
     ipv4Array=()    # 声明为数组
+    EnableCFproxiedArray=()    # 声明为数组
     reverseProxyArrayIP=""
 
     # 确定各个 section 的顺序和边界
     # 将所有索引放入数组并排序
     sections=()
-    [[ $ramIndex != "-1" ]] && sections+=("$ramIndex:RAM")
+    [[ $authIndex != "-1" ]] && sections+=("$authIndex:Auth")
     [[ $directIndex != "-1" ]] && sections+=("$directIndex:Direct")
     [[ $ipv6Index != "-1" ]] && sections+=("$ipv6Index:IPv6")
     [[ $ipv4Index != "-1" ]] && sections+=("$ipv4Index:IPv4")
+    [[ $EnableCFproxiedIndex != "-1" ]] && sections+=("$EnableCFproxiedIndex:EnableCFproxied")
     
     # 按索引排序
     IFS=$'\n' sorted_sections=($(sort <<<"${sections[*]}"))
@@ -96,8 +98,8 @@ function getConfigurationItems(){
         item="${configArray[i]}"
         
         # 检查是否是新的 section
-        if [[ "$item" == "[RAM]" ]]; then
-            current_section="RAM"
+        if [[ "$item" == "[Auth]" ]]; then
+            current_section="Auth"
             continue
         elif [[ "$item" == "[Direct]" ]]; then
             current_section="Direct"
@@ -108,12 +110,15 @@ function getConfigurationItems(){
         elif [[ "$item" == "[IPv4]" ]]; then
             current_section="IPv4"
             continue
+        elif [[ "$item" == "[EnableCFproxied]" ]]; then
+            current_section="EnableCFproxied"
+            continue
         fi
         
         # 根据当前 section 处理内容
         case "$current_section" in
-            RAM)
-                ramArray+=("$item")
+            Auth)
+                authArray+=("$item")
                 ;;
             Direct)
                 key="${item%%=*}"
@@ -132,12 +137,18 @@ function getConfigurationItems(){
             IPv4)
                 ipv4Array+=("${item}=${currentIPv4}")
                 ;;
+            EnableCFproxied)
+                EnableCFproxiedArray+=("${item}")
+                ;;
         esac
     done
+
+    # 获取配置文件中的 Auth 配置项中的 DNS 服务商
+    DNS_ISP_API=${authArray[0]%%_*}
     
     # ========== 输出结果验证 ==========
-    # echo "ramArray (共 ${#ramArray[@]} 项):"
-    # for item in "${ramArray[@]}"; do
+    # echo "authArray (共 ${#authArray[@]} 项):"
+    # for item in "${authArray[@]}"; do 
     #     echo "$item"
     # done
     # echo "ipv6Array (共 ${#ipv6Array[@]} 项):"
@@ -148,8 +159,13 @@ function getConfigurationItems(){
     # for item in "${ipv4Array[@]}"; do
     #     echo "$item"
     # done
+    # echo "EnableCFproxiedArray (共 ${#EnableCFproxiedArray[@]} 项):"
+    # for item in "${EnableCFproxiedArray[@]}"; do
+    #     echo "$item"
+    # done
 }
 # ##### ***** ===== ----- 配置文件解析 方法 结束 ----- ===== ***** #####
+
 
 # 获得公网 IPv4 地址
 gateway_ip4=$(ip route | awk '/^default/ {print $3; exit}')
@@ -186,11 +202,12 @@ if [ ! -z "$ipv6_addr" ]; then
             Has_the_configuration_file_been_deconstructed=true
             # echo "ipv6Array: ${ipv6Array[@]}"
             if [ ! -z "${ipv6Array[0]}" ]; then
-                send_ramArray_Str=$(IFS='|'; echo "${ramArray[*]}")
+                send_authArray_Str=$(IFS='|'; echo "${authArray[*]}")
                 send_subDomain_Str=$(IFS='|'; echo "${ipv6Array[*]}")
                 send_directArray_Str=$(IFS='|'; echo "${directArray[*]}")
-                # echo "IPv6 go Aiyun"
-                bash ./aliyun.sh $domainName $currentIPv6 ${send_ramArray_Str} ${send_subDomain_Str} "AAAA"
+                send_EnableCFproxied_Str=$(IFS='|'; echo "${EnableCFproxiedArray[*]}")
+                # echo "IPv6 go DNS_ISP_API ：${DNS_ISP_API}"
+                bash "./"${DNS_ISP_API}".sh" $domainName $currentIPv6 ${send_authArray_Str} ${send_subDomain_Str} "AAAA" ${send_EnableCFproxied_Str}
                 if [ $? -eq 0 ];        then
                     echo "[$(date "+%G/%m/%d %H:%M:%S")]  ${lastIPv6}"' --> '"${currentIPv6}" >> info.log
                     mv $lastIPv6 $currentIPv6
@@ -204,15 +221,16 @@ fi
 lastIPv4=`ls | grep "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}"`
 # echo "currentIPv4：$currentIPv4 -- lastIPv4：$lastIPv4"
 if [ ! "${lastIPv4}" = "${currentIPv4}" ]; then 
-    if [ $Has_the_configuration_file_been_deconstructed==false ]; then
+    if ! $Has_the_configuration_file_been_deconstructed; then
         getConfigurationItems
     fi
     # echo "ipv4Array: ${ipv4Array[@]}"
     if [ ! -z "${ipv4Array[0]}" ]; then
-        send_ramArray_Str=$(IFS='|'; echo "${ramArray[*]}")
+        send_authArray_Str=$(IFS='|'; echo "${authArray[*]}")
         send_subDomain_Str=$(IFS='|'; echo "${ipv4Array[*]}")
-        # echo "IPv4 go Aiyun"
-        bash ./aliyun.sh $domainName $currentIPv4 ${send_ramArray_Str} ${send_subDomain_Str} "A"
+        send_EnableCFproxied_Str=$(IFS='|'; echo "${EnableCFproxiedArray[*]}")
+        # echo "IPv4 go DNS_ISP_API ：${DNS_ISP_API}"
+        bash "./"${DNS_ISP_API}".sh" $domainName $currentIPv4 ${send_authArray_Str} ${send_subDomain_Str} "A" ${send_EnableCFproxied_Str}
         if [ $? -eq 0 ];        then
             echo "[$(date "+%G/%m/%d %H:%M:%S")]  ${lastIPv4}"' --> '"${currentIPv4}" >> info.log
             mv $lastIPv4 $currentIPv4

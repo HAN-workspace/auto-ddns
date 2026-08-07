@@ -1,23 +1,21 @@
 domainName=$1
 currentIP=$2
-send_ramArray_Str=$3
-IFS='|' read -ra ramArray <<< "$send_ramArray_Str"
+send_authArray_Str=$3
+IFS='|' read -ra ramArray <<< "$send_authArray_Str"
 send_subDomain_Str=$4
 IFS='|' read -ra SubDomainArray <<< "$send_subDomain_Str"
 typeMode=$5
-
-# 验证变量传入
-# echo "aliyunFile_domainName: $domainName"
-# echo "aliyunFile_currentIP: $currentIP"
-# echo "aliyunFile_ramArray: ${#ramArray[@]}"
-# echo "aliyunFile_subDomain: ${#SubDomainArray[@]}"
-# echo "aliyunFile_typeMode: $typeMode"
+# echo "aliyunVar_domainName: $domainName"
+# echo "aliyunVar_currentIP: $currentIP"
+# echo "aliyunVar_ramArray: ${#ramArray[@]}"
+# echo "aliyunVar_subDomain: ${#SubDomainArray[@]}"
+# echo "aliyunVar_typeMode: $typeMode"
 
 # 解析 RAM 配置文件
 for dict in "${ramArray[@]}"; do
     if [[ $dict == aliyun_ID=* ]]; then
-        Ali_Key="${dict#*=}"
-    elif [[ $dict == aliyun_SE=* ]]; then
+        Ali_ID="${dict#*=}"
+    elif [[ $dict == aliyun_Secret=* ]]; then
         Ali_Secret="${dict#*=}"
     fi
 done
@@ -28,20 +26,33 @@ done
 # done
 
 
-# 处理交互信息 (提取 阿里云解释DNS 响应的 "Message":"........")
+# 处理交互信息 (提取 阿里云DNS 响应的 Code/Message 并写入 info.log)
+# 成功判定：阿里云成功响应通常不含 "Code":"..." 字段；失败时会返回 "Code":"错误码" 与 "Message":"错误描述"
 function writeErrMessage() {
-    # 提取错误信息
-    ali_response=$(tail -n 1 info.log)
-    # 探头去尾，只保留 Message
-    x_Message=${ali_response#*Message\"\:\"}
-    if [ "${x_Message%%025/*}" == "2" ];then
-        `sed -i '$d' info.log`
-    else
-        # 记录 更新失败 信息
-        x_Message_x=${x_Message%\",\"*}
-        `sed -i '$d' info.log`
-        echo "[$(date "+%G/%m/%d %H:%M:%S")] $1 $2 \"Message\":\"${x_Message_x}\"" >> info.log
+    # 取 info.log 最末一行（刚写入的 API 响应 JSON），并去掉 Windows 回车符
+    ali_response=$(tail -n 1 info.log | tr -d '\r')
+
+    # ========== 成功分支 ==========
+    # 若响应中不包含 "Code":" 即视为成功；直接删除末尾的原始响应行，不追加额外信息
+    if ! echo "$ali_response" | grep -q '"Code":"'; then
+        sed -i '$d' info.log
+        echo "[$(date "+%G/%m/%d %H:%M:%S")] $1 $2 " >> info.log
+        return 0
     fi
+
+    # ========== 失败分支 ==========
+    # 尝试提取 Message（若存在则取第一条 Message 内容，不存在则兜底）
+    x_Message_x=$(echo "$ali_response" | tr -d '\n' | sed -n 's/.*"Message":"\([^"]*\)".*/\1/p' | head -n 1)
+    [ -z "$x_Message_x" ] && x_Message_x="Unknown error"
+    # 去掉残留换行/回车，以及对双引号做转义，避免破坏日志行格式
+    x_Message_x=${x_Message_x//$'\r'/}
+    x_Message_x=${x_Message_x//$'\n'/}
+    x_Message_x=${x_Message_x//\"/\\\"}
+
+    # 删除末尾原始响应行，替换为统一格式的错误行
+    sed -i '$d' info.log
+    echo "[$(date "+%G/%m/%d %H:%M:%S")] $1 $2 \"Message\":\"${x_Message_x}\"" >> info.log
+    return 1
 }
 
 # 加密函数
@@ -68,7 +79,7 @@ send_request() {
     local params=()
     
     # 处理基本参数
-    params+=("AccessKeyId=$(enc "${Ali_Key}")")
+    params+=("AccessKeyId=$(enc "${Ali_ID}")")
     params+=("Action=$(enc "$1")")
     params+=("Format=$(enc "json")")
     params+=("Version=$(enc "2015-01-09")")
@@ -109,14 +120,14 @@ send_request() {
     curl -s "http://alidns.aliyuncs.com/?${args}&Signature=$(enc "${hash}")"
 }
 
-# 添加记录值 (RecordID)
-add_record() {
-    send_request "AddDomainRecord" "DomainName=${domainName}&RR=${SubDomain}&SignatureMethod=HMAC-SHA1&SignatureNonce=${signaturenonce}&SignatureVersion=1.0&TTL=600&Timestamp=${timestamp}&Type=${typeMode}&Value=${currentIP}"
-}
-
 # 删除阿里云DNS记录
 delete_record() {
     send_request "DeleteDomainRecord" "RecordId=$1&SignatureMethod=HMAC-SHA1&SignatureNonce=${signaturenonce}&SignatureVersion=1.0&TTL=600&Timestamp=${timestamp}"
+}
+# ttl=值 阿里云 要求最小值为600(秒)
+# 添加记录值 (RecordID)
+add_record() {
+    send_request "AddDomainRecord" "DomainName=${domainName}&RR=${SubDomain}&SignatureMethod=HMAC-SHA1&SignatureNonce=${signaturenonce}&SignatureVersion=1.0&TTL=600&Timestamp=${timestamp}&Type=${typeMode}&Value=${currentIP}"
 }
 
 # 更新记录值 (RecordID)
@@ -182,7 +193,6 @@ else
 fi
 
 # 比较 阿里云DNS 记录值(子域名)不在配置中的，提交 阿里云DNS 进行删除
-# delRecords=()
 for aliRecordEntry in "${aliRecordArray[@]}"; do
     found=0
     ali_RR="${aliRecordEntry%%=*}"
@@ -209,7 +219,6 @@ done
 
 
 # 比较 阿里云DNS 记录值(子域名) 与配置中配置的子域名相同时，提交 阿里云DNS 进行更新
-# updateRecords=()
 for aliRecordEntry in "${aliRecordArray[@]}"; do
     ali_RR="${aliRecordEntry%%=*}"
     ali_ID="${aliRecordEntry#*=}"
@@ -237,7 +246,6 @@ done
 # echo "交集: ${updateRecords[@]}"
 
 # 比较 阿里云DNS 记录值(子域名)没有在配置中的，提交 阿里云DNS 进行添加
-# addRecords=()
 for settingEntry in "${SubDomainArray[@]}"; do
     found=0 
     SubDomain="${settingEntry%%=*}"
