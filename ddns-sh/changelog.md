@@ -1,10 +1,10 @@
 ## v1.1.0 (2026-08-8)
 
 ### 支持Cloudflare DNS 解释
-- 新增 cloudflare.sh 脚本，用于更新 Cloudflare DNS 主机记录
+- 新增 cloudflare.sh 脚本，支持 Cloudflare DNS 主机记录新增、删除、更新（仅支持 A、AAAA 类型）
 - 支持配置文件中定义是否启用 “CF代理”(小橙云)
 - main.sh 添加自动调用适配到的域名托管商API(只需在配置文件按规定配置即可)
-- aliyun.sh 调整交互日志处理，添加了错误信息提示。
+- aliyun.sh 调整交互日志处理，添加了错误信息提示
 - OpenWrt 环境下，定时任务时不再产生误报的 cron.err 日志记录
   
 ## v1.0.0 (2026-07-28)
