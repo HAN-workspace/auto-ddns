@@ -14,7 +14,7 @@ shell：bash <br>
 - **[cloudflare.sh](https://github.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/cloudflare.sh)** 与*cloudflare*交互的 API 脚本，进行主机记录的增删改查操作
 - **[domain name](https://github.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/example.com.cn)** 配置文件 [参考示例](https://github.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.md#domain-%E5%86%85%E7%BB%93%E6%9E%84) 编写属于你的专用配置<br>
 此文件名需用你的域名命名 ( *[example.com.cn](https://github.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/example.com.cn)* )
-- **info.log** 记录：公网IP发生变化、向 *DNS 域名托管商* 交互时的错误信息、添新增子域名的操作也会记录
+- **info.log** 记录：公网IP发生变化、向 *DNS 域名托管商* 交互时的错误信息、更新/新增/删除主机记录的操作也会记录
 - **公网IPv4** 初始名字为：`1.1.1.1` 用于比对当前获得的公网IPv4，首次运行本脚本且脚本正常结束时，文件名会被脚本更名为当前公网 IPv4 地址
 - **公网IPv6** 初始名字为：`240e-1-1-1` 用于比对当前获得的公网IPv6前缀，首次运行本脚本且脚本正常结束时，文件名会被脚本更名为当前公网 IPv6 前缀
 
@@ -50,7 +50,7 @@ crontab -e
 [Auth]
 # aliyun_ID=abcdefghijk
 # aliyun_Secret=lnmopqrstuvwxyx
-# 或 （ aliyun / cloudflare 只能使用一个域名托管商）
+# （ aliyun / cloudflare 只能使用一个域名托管商）
 cloudflare_Accunt=123456789
 cloudflare_Token=09876543210
 cloudflare_zoneID=a0b9c8d7e6f5a4b3c2d1e0
@@ -81,12 +81,12 @@ truenas=true
 必须配置，作用域名托管商的认证<br>
 aliyun_ID= <br>
 aliyun_Secret= <br>
-或
+或<br>
 cloudflare_Accunt= <br>
 cloudflare_Token= <br>
 **若使用Global API Key，这里都用 cloudflare_Token 传入**<br>
 cloudflare_zoneID= <br>
-**可选项 填写 zoneID 会更好**<br>
+**可选项（填写 zoneID 会更好）**<br>
 
 使用以域名托管商名字定义 key 调用对应的域名托管商的交互脚本。（ 目前支持 aliyun、cloudflare ）<br>
 [返回示例](https://github.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.md#domain-%E5%86%85%E7%BB%93%E6%9E%84)
@@ -141,12 +141,12 @@ reverseProxy=“反向代理服务器的IPv6后缀” 本条目是为配置在�
 [返回示例](https://github.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.md#domain-%E5%86%85%E7%BB%93%E6%9E%84)
 
 #### 【EnableCFproxied】<br>
-本 section 是 cloudflare 特有的 “开启代理” 模式，其作用是隐藏真实IP 的防护、走CF的 CDN 路由 <br>
-`IPv4=`统一配置 所有A记录类型：true 即开启CF代理，false 即关闭CF代理<br>
-`IPv6=`统一配置 所有AAAA记录类型：true 即开启CF代理，false 即关闭CF代理<br>
-若没有为 【Direct】内的主机记录独立配置的，直连中的所有主机记录默认按*IPv6=*配置项处理"开启代理"<br>
-`主机记录=`独立配置 优先级高于*IPv6=*统一配置<br>
-例如：nas=false 则不管*IPv6=*配置项是否为true，都不开启CF代理<br><br>
+本 section 是 cloudflare 特有的 “开启代理” 模式，其作用是隐藏真实IP 的防护、走 CF 的 CDN 路由 <br>
+`IPv4=`统一配置 所有A记录类型：true 即开启 CF 代理，false 即关闭 CF 代理<br>
+`IPv6=`统一配置 所有AAAA记录类型：true 即开启 CF 代理，false 即关闭 CF 代理<br>
+若没有为 【Direct】内的主机记录独立配置"开启代理"的，直连中的所有主机记录默认按 IPv6= 配置项处理<br>
+`主机记录=`独立配置 优先级高于 IPv6= 统一配置<br>
+例如：nas=false 则不管 IPv6= 配置项是否为true，都不开启 CF 代理<br><br>
 配置示例：abc.com<br>
 在 cloudflare DNS 解释中生成
 
