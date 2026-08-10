@@ -1,5 +1,15 @@
-## 目录结构
 [立即下载 latest 版：ddns-sh.tar](https://github.com/HAN-workspace/auto-ddns/releases/latest/download/ddns-sh.tar)<br>
+## 介绍
+轻量级动态dns，实现自动调用 API 同步公网 IP 到域名托管商 ( 支持：阿里云 cloudflare )<br>
+支持 IPv4/6 动态公网地址，主机记录(A/AAAA)的增删改查。<br>
+<font color="red">**重要：本脚本会接管所有子域名 (仅 A/AAAA 主机记录)，没有在配置文件中的将被删除。**</font>
+
+## 软件架构
+纯 linux bash 脚本，可运行于精简过的 bash 下，如 OpenWrt<br>
+依赖 curl 及 openssl 库<br>
+测试环境：debian 13 、 OpenWrt 25.12.5<br>
+
+## 目录结构
 <pre>auto-ddns/
     ├── readme.md （github 专属简介）
     ├── readme.osc.md （gitee 专属简介）
@@ -21,14 +31,6 @@
     └── ddns-go/ （待办任务）
              └── ... 
 </pre>
-## 介绍
-轻量级动态dns，实现自动调用 API 同步公网 IP 到域名托管商 ( 支持：阿里云 cloudflare )<br>
-支持 IPv4/6 动态公网地址，主机记录(A/AAAA)的增删改查。<br>
-<font color="red">**重要：本脚本会接管所有子域名 (仅 A/AAAA 主机记录)，没有在配置文件中的将被删除。**</font>
-
-## 软件架构
-纯 linux bash 脚本，可运行于精简 bash 下，如 OpenWrt<br>
-依赖 curl 及 openssl
 
 ## 安装教程
 绿色脚本 无需安装 解压即用
