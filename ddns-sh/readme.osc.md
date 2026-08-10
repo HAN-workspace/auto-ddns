@@ -146,22 +146,23 @@ reverseProxy=“反向代理服务器的IPv6后缀” 本条目是为配置在�
 `IPv6=`统一配置 所有AAAA记录类型：true 即开启CF代理，false 即关闭CF代理<br>
 若没有为 【Direct】内的主机记录独立配置的，直连中的所有主机记录默认按*IPv6=*配置项处理"开启代理"<br>
 `主机记录=`独立配置 优先级高于*IPv6=*统一配置<br>
-例如：rtsp=false 则不管*IPv6=*配置项是否为true，都为不CF开启代理<br><br>
+例如：nas=false 则不管*IPv6=*配置项是否为true，都不开启CF代理<br><br>
 配置示例：abc.com<br>
 在 cloudflare DNS 解释中生成
 
 |名称|类型|内容|代理状态|
 |--:|:--:|:--|:--|
 |abc.com|A|x.x.x.x|已代理|
-|abc.com|AAAA|2???\:x\:x\:x\:abcd\:efff\:fe12\:3456|已代理|
+|abc.com|AAAA|2???\:x\:x\:x\:x\:x\:x\:|已代理|
 |www.abc.com|A|x.x.x.x|已代理|
-|www.abc.com|AAAA|2???\:x\:x\:x\:abcd\:efff\:fe12\:3456|已代理|
+|www.abc.com|AAAA|2???\:x\:x\:x\:x\:x\:x\:|已代理|
 |wiki.abc.com|A|x.x.x.x|已代理|
-|fnos.abc.com|AAAA|2???\:x\:x\:x\:abcd\:efff\:fe12\:3456|已代理|
+|fnos.abc.com|AAAA|2???\:x\:x\:x\:x\:x\:x\:|已代理|
 |nas.abc.com|AAAA|2???\:x\:x\:x\:a1b2\:c3ff\:fee4\:d5e6|仅DNS|
 |truenas.abc.com|AAAA|2???\:x\:x\:x\:1234\:56ff\:fe78\:90ab|已代理|
 
-<font color="red">**注意：IPv4=true 时**</font> CF 会为【IPv4】内的主机记录生产出 CF IPv6 地址
-注意：因 CF代理 产生的地址高于 你的公网地址，所以<font color="red">**【IPv4】内的主机记录 不要与【IPv6】及【Direct】内的主机记录名字相同<br>（ 除非 IPv4=false ）**</font>
+<font color="red">**注意：IPv4=true 时**</font> CF 会为【IPv4】内的主机记录生产出 CF IPv6 地址，<font color="orange">**使 reverseProxy= 地址将不被解释**</font>
+注意：同样【Direct】内的主机记录在【EnableCFproxied】内配置为 true ，也会使直连的真实地址不被解释
+注意：因 CF代理 产生的地址高于 你的公网地址，所以慎用，且<font color="red">**【IPv4】内的主机记录 不要与【IPv6】及【Direct】内的主机记录名字相同<br>（ 除非 IPv4=false ）**</font>
 
 [返回示例](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.osc.md#domain-%E5%86%85%E7%BB%93%E6%9E%84)
