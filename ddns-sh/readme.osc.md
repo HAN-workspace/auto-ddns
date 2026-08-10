@@ -12,7 +12,7 @@ shell：bash <br>
 - **[main.sh](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/main.sh)** 主脚本，判断公网IP是否发生变化的逻辑，读取配置，调用对应的域名托管商的交互脚本。如：aliyun.sh、cloudflare.sh
 - **[aliyun.sh](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/aliyun.sh)** 与*阿里云*交互的 API 脚本，进行主机记录的增删改查操作
 - **[cloudflare.sh](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/cloudflare.sh)** 与*cloudflare*交互的 API 脚本，进行主机记录的增删改查操作
-- **[domain name](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/example.com.cn)** 配置文件 [参考示例](https://gitee.com/HAN-workspace/auto-ddns/blob/CF-API/ddns-sh/readme.osc.md#domain-%E5%86%85%E7%BB%93%E6%9E%84) 编写属于你的专用配置<br>
+- **[domain name](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/example.com.cn)** 配置文件 [参考示例](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.osc.md#domain-%E5%86%85%E7%BB%93%E6%9E%84) 编写属于你的专用配置<br>
 此文件名需用你的域名命名 ( *[example.com.cn](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/example.com.cn)* )
 - **info.log** 记录：公网IP发生变化、向 *阿里云解析DNS* 交互时的错误信息、添新增子域名的操作也会记录
 - **公网IPv4** 初始名字为：`1.1.1.1` 用于比对当前获得的公网IPv4，首次运行本脚本且脚本正常结束时，文件名会被脚本更名为当前公网 IPv4 地址
@@ -160,4 +160,8 @@ reverseProxy=“反向代理服务器的IPv6后缀” 本条目是为配置在�
 |fnos.abc.com|AAAA|2???\:x\:x\:x\:abcd\:efff\:fe12\:3456|已代理|
 |nas.abc.com|AAAA|2???\:x\:x\:x\:a1b2\:c3ff\:fee4\:d5e6|仅DNS|
 |truenas.abc.com|AAAA|2???\:x\:x\:x\:1234\:56ff\:fe78\:90ab|已代理|
+
+<font color="red">**注意：IPv4=true 时**</font> CF 会为【IPv4】内的主机记录生产出 CF IPv6 地址
+注意：因 CF代理 产生的地址高于 你的公网地址，所以<font color="red">**【IPv4】内的主机记录 不要与【IPv6】及【Direct】内的主机记录名字相同<br>（ 除非 IPv4=false ）**</font>
+
 [返回示例](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.osc.md#domain-%E5%86%85%E7%BB%93%E6%9E%84)
