@@ -1,5 +1,5 @@
 ## 目录结构
-[立即下载 latest 版：ddns-sh.tar](https://github.com/HAN-workspace/auto-ddns/releases/download/latest/ddns-sh.tar)<br>
+[立即下载 latest 版：ddns-sh.tar](https://github.com/HAN-workspace/auto-ddns/releases/latest/download/ddns-sh.tar)<br>
 <pre>auto-ddns/
     ├── readme.md （github 专属简介）
     ├── readme.osc.md （gitee 专属简介）

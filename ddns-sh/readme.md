@@ -161,8 +161,8 @@ reverseProxy=“反向代理服务器的IPv6后缀” 本条目是为配置在�
 |nas.abc.com|AAAA|2???\:x\:x\:x\:a1b2\:c3ff\:fee4\:d5e6|仅DNS|
 |truenas.abc.com|AAAA|2???\:x\:x\:x\:xx\:xx\:xx\:xx|已代理|
 
-<font color="red">**注意：IPv4=true 时**</font> CF 会为【IPv4】内的主机记录生产出 CF IPv6 地址，<font color="orange">**使 reverseProxy= 地址将不被解释**</font>
+注意：<font color="red">**IPv4=true 时**</font> CF 会为【IPv4】内的主机记录生产出 CF IPv6 地址，<font color="orange">** reverseProxy= 地址将不被解释**</font>
 注意：同样【Direct】内的主机记录在【EnableCFproxied】内配置为 true ，也会使直连的真实地址不被解释
-注意：因 CF代理 产生的地址高于 你的公网地址，所以慎用，且<font color="red">**【IPv4】内的主机记录 不要与【IPv6】及【Direct】内的主机记录名字相同<br>（ 除非 IPv4=false ）**</font>
+注意：<font color="red">**因 CF代理 产生的地址高于 你的公网地址，所以慎用**</font>，且【IPv4】内的主机记录 不要与【IPv6】及【Direct】内的主机记录名字相同<br>（ 除非 IPv4=false ）
 
 [返回示例](https://github.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.md#domain-%E5%86%85%E7%BB%93%E6%9E%84)
