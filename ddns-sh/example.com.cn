@@ -27,10 +27,11 @@ reverseProxy=＂反向代理服务器的 IPv6 地址的后缀＂
 ＂主机记录３＂
 ＂主机记录４＂
 
-注意：IPv4=true 时 CF 会为【IPv4】内的主机记录生产出 CF IPv6 地址，reverseProxy= 地址将不被解释
-注意：同样【Direct】内的主机记录在【EnableCFproxied】内配置为 true ，也会使直连的真实地址不被解释
-注意：因 CF代理 产生的地址高于 你的公网地址，所以慎用，且【IPv4】内的主机记录 不要与【IPv6】及【Direct】内的主机记录名字相同（ 除非 IPv4=false ）
 [EnableCFproxied]
+# 注意：IPv4=true 时 CF 会为【IPv4】内的主机记录配置 CF 的 IPv4/6 地址，不再解释真实公网地址
+# 注意：同样IPv6=true 时【IPv6】内的主机记录也会配置 CF 的 IPv4/6 地址，也不被解释 reverseProxy= 地址
+# 注意：【Direct】内的直连主机记录在【EnableCFproxied】内配置为 true ，也不会被解释
+# 注意：因 CF代理 配置的地址高于 你的公网地址，所以慎用，建议【IPv4】【IPv6】【Direct】内的不要用相同的主机记录名字
 IPv4=＂true or false＂
 IPv6=＂true or false＂
 ＂【Direct】内的 主机记录５＂=＂true or false＂

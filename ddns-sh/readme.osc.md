@@ -1,5 +1,5 @@
 ## -------------- ddns-sh 说  明 -------------- 
-<font color="red">**重要：本脚本会接管所有子域名 (仅 A/AAAA 主机记录)，没有在配置文件中的将被删除。**</font>
+<font color="red">**重要：本脚本会对 A/AAAA 类型的记录进行更新、新增、删除操作，对没有在配置文件中的记录将被删除(仅 A/AAAA 主机记录)。**</font>
 ### 运行环境
 系统：linux <br>
 shell：bash <br>
@@ -108,7 +108,7 @@ reverseProxy=“反向代理服务器的IPv6后缀” 本条目是为配置在�
 [返回示例](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.osc.md#domain-%E5%86%85%E7%BB%93%E6%9E%84)
 
 #### 【IPv6】<br>
-这个 section 是为非直连 (即使用反向代理) 的子域名配置使用 <br>
+本 section 是为非直连 (即使用反向代理) 的子域名配置使用 <br>
 需要在【Direct】填写反向代理 reverseProxy=“反向代理服务器的IPv6后缀” 专项条目（ 例：reverseProxy=abcd\:efff\:fe12\:3456 ）<br><br>
 使用反向代理的填写 "子域名"，若没有 "子域名" 请配置一个 '@' ( 例：example.com，只需填写 @ ) <br><br>
 配置示例：abc.com<br>
@@ -126,7 +126,7 @@ reverseProxy=“反向代理服务器的IPv6后缀” 本条目是为配置在�
 [返回示例](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.osc.md#domain-%E5%86%85%E7%BB%93%E6%9E%84)
 
 #### 【IPv4】<br>
-这个 section 是为非直连 (即反向代理) 的子域名配置使用 <br>
+本 section 是为非直连 (即反向代理) 的子域名配置使用 <br>
 填写 "子域名"，若没有 "子域名" 请配置一个 '@' (例：example.com，只需填写 @ ) <br><br>
 配置示例：abc.com<br>
 在域名托管商的 DNS 解释中生成
@@ -142,26 +142,30 @@ reverseProxy=“反向代理服务器的IPv6后缀” 本条目是为配置在�
 
 #### 【EnableCFproxied】<br>
 本 section 是 cloudflare 特有的 “开启代理” 模式，其作用是隐藏真实IP 的防护、走 CF 的 CDN 路由 <br>
-`IPv4=`统一配置 所有A记录类型：true 即开启 CF 代理，false 即关闭 CF 代理<br>
-`IPv6=`统一配置 所有AAAA记录类型：true 即开启 CF 代理，false 即关闭 CF 代理<br>
-若没有为 【Direct】内的主机记录独立配置"开启代理"的，直连中的所有主机记录默认按 IPv6= 配置项处理<br>
-`主机记录=`独立配置 优先级高于 IPv6= 统一配置<br>
-例如：nas=false 则不管 IPv6= 配置项是否为true，都不开启 CF 代理<br><br>
+`IPv4=`统一配置【IPv4】内所有主机记录：true 即开启 CF 代理，false 即关闭 CF 代理<br>
+`IPv6=`统一配置【IPv6】内所有主机记录：true 即开启 CF 代理，false 即关闭 CF 代理<br>
+【Direct】内的直连主机记录默认以 IPv6= 配置（除独立配置的主机记录外）<br>
+`主机记录=`独立配置 优先级高于 IPv6= 统一配置（但仅限【Direct】内的主机记录生效）<br>
+例如：【Direct】内有 nas=aaa:bbb:ddd:eee 在【EnableCFproxied】内配置 nas=false 时，则优于 IPv6=true，该主机记录将不开启 CF 代理<br><br>
 配置示例：abc.com<br>
 在 cloudflare DNS 解释中生成
 
-|名称|类型|内容|代理状态|
-|--:|:--:|:--|:--|
-|abc.com|A|x.x.x.x|已代理|
-|abc.com|AAAA|2???\:x\:x\:x\:x\:x\:x\:|已代理|
-|www.abc.com|A|x.x.x.x|已代理|
-|www.abc.com|AAAA|2???\:x\:x\:x\:x\:x\:x\:|已代理|
-|wiki.abc.com|A|x.x.x.x|已代理|
-|fnos.abc.com|AAAA|2???\:x\:x\:x\:x\:x\:x\:|已代理|
-|nas.abc.com|AAAA|2???\:x\:x\:x\:a1b2\:c3ff\:fee4\:d5e6|仅DNS|
-|truenas.abc.com|AAAA|2???\:x\:x\:x\:x\:x\:x\:x|已代理|
+|名称|类型|内容|代理状态|nslookup 解释|
+|--:|:--:|:--|:--|:--|
+|abc.com|A|x.x.x.x|已代理|解释出的是 CF专用的 IPv4/6 地址|
+|abc.com|AAAA|2???\:x\:x\:x\:abcd\:efff\:fe12\:3456|已代理|解释出的是 CF专用的 IPv4/6 地址|
+|www.abc.com|A|x.x.x.x|已代理|解释出的是 CF专用的 IPv4/6 地址|
+|www.abc.com|AAAA|2???\:x\:x\:x\:abcd\:efff\:fe12\:3456|已代理|解释出的是 CF专用的 IPv4/6 地址|
+|wiki.abc.com|A|x.x.x.x|已代理|解释出的是 CF专用的 IPv4/6 地址|
+|fnos.abc.com|AAAA|2???\:x\:x\:x\:abcd\:efff\:fe12\:3456|已代理|解释出的是 CF专用的 IPv4/6 地址|
+|nas.abc.com|AAAA|2???\:x\:x\:x\:a1b2\:c3ff\:fee4\:d5e6|仅DNS|解释出内容中的地址|
+|truenas.abc.com|AAAA|2???\:x\:x\:x\:1234\:56ff\:fe78\:90ab|已代理|解释出的是 CF专用的 IPv4/6 地址|
 
-注意：<font color="red">**IPv4=true 时**</font> CF 会为【IPv4】内的主机记录生产出 CF IPv6 地址，<font color="orange">** reverseProxy= 地址将不被解释**</font><br>
-注意：同样【Direct】内的主机记录在【EnableCFproxied】内配置为 true ，也会使直连的真实地址不被解释<br>
-注意：<font color="red">**因 CF代理 产生的地址高于 你的公网地址，所以慎用**</font>，且【IPv4】内的主机记录 不要与【IPv6】及【Direct】内的主机记录名字相同<br>（ 除非 IPv4=false ）<br>
+注意：IPv4=true 时 CF 会为【IPv4】内的主机记录配置 CF 的 IPv4/6 地址，不再解释真实公网地址<br>
+注意：同样IPv6=true 时【IPv6】内的主机记录也会配置 CF 的 IPv4/6 地址，也不被解释 reverseProxy= 地址<br>
+注意：【Direct】内的直连主机记录在【EnableCFproxied】内配置为 true ，也不会被解释<br>
+注意：因 CF代理 配置的地址高于 你的公网地址，所以慎用，建议【IPv4】【IPv6】【Direct】内的不要用相同的主机记录名字<br><br>
+
+重要：CF代理 默认转发 80 443 端口的流量到源服务器，当你被 ISP 封这两个端口时，CF代理转发的流量会失败 <br>
+解决：登陆 CF 控制台，找到你的域名，“规则” -> "创建规则" -> "Origin Rules"，把 80 端口重写到 “5647” 或 443 端口重写到 ”55555” <br>
 [返回示例](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.osc.md#domain-%E5%86%85%E7%BB%93%E6%9E%84)

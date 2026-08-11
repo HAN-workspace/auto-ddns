@@ -2,7 +2,7 @@
 ## 介绍
 auto ddns 是轻量级的动态dns，实现自动调用 API 同步公网 IP 到域名托管商 ( 支持：阿里云 、 cloudflare )<br>
 支持 IPv4/6 动态公网地址，主机记录(A/AAAA)的增删改查。<br>
-<font color="red">**重要：本脚本会接管所有子域名 (仅 A/AAAA 主机记录)，没有在配置文件中的将被删除。**</font>
+<font color="red">**重要：本脚本会对 A/AAAA 类型的记录进行更新、新增、删除操作，对没有在配置文件中的记录将被删除(仅 A/AAAA 主机记录)。**</font>
 
 ## 软件架构
 纯 linux bash 脚本，可运行于精简过的 bash 下，如 OpenWrt<br>
@@ -34,7 +34,8 @@ auto ddns 是轻量级的动态dns，实现自动调用 API 同步公网 IP 到�
 
 ## 安装教程
 绿色脚本 无需安装 解压即用<br>
-只需 [ddns-sh](https://github.com/HAN-workspace/auto-ddns/tree/main/ddns-sh) 目录下的文件<br>
+只需 [ddns-sh](https://gitee.com/HAN-workspace/auto-ddns/tree/main/ddns-sh) 目录中的文件<br>
+标记为 `*` 为必要文件，or* 为可选的必要文件（选择用于你的域名托管商 API 即可）<br>
 
 ## 使用说明
 请阅读 [详细说明](https://github.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.md) 文件。
