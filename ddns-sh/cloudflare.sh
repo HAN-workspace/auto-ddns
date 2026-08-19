@@ -14,7 +14,7 @@ IFS='|' read -ra EnableCFproxiedArray <<< "$send_EnableCFproxied_Str"
 # echo "cloudflareVar_typeMode: $typeMode"
 # echo "cloudflareVar_EnableCFproxied: ${#EnableCFproxiedArray[@]}"
 
-# 解析 [Auth] 配置
+# 解析 [Auth] 配置项
 for dict in "${authArray[@]}"; do
     if [[ $dict == cloudflare_Accunt=* ]]; then
         CF_accunt="${dict#*=}"

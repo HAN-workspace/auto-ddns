@@ -1,6 +1,6 @@
 [立即下载 latest 版：ddns-sh.tar](https://gitee.com/HAN-workspace/auto-ddns/releases/download/latest/ddns-sh.tar)<br>
 ## 介绍
-auto-ddns 是轻量级的动态dns集，自动调用 域名托管商 DNS API 进行 DNS记录操作 ( 支持：阿里云 、 cloudflare )<br>
+auto-ddns 是轻量级的动态dns集，自动调用 域名托管商 DNS API 进行 DNS记录操作 ( 支持：阿里云 、 cloudflare 、 腾讯云 )<br>
 支持 IPv4/6 动态公网地址，主机记录(A/AAAA)的增删改查。<br>
 <font color="red">**重要：本脚本会对 A/AAAA 类型的记录进行更新、添加、删除操作，对没有在配置文件中的记录将被删除(仅 A/AAAA 主机记录)。**</font>
 
@@ -21,7 +21,7 @@ ddns-sh 是纯 linux bash 脚本，可运行于精简过的 bash 下，如 OpenW
     │     *  ├── main.sh       （主程序）
     │   or*  ├── aliyun.sh     （阿里云 DNS API）
     │   or*  ├── cloudflare.sh （Cloudflare DNS API）
-    │        ├── tencent.sh    （待办任务：腾讯云 DNS API）
+    │   or*  ├── tencent.sh    （腾讯云 DNS API）
     │     *  ├── info.log      （记录执行信息）
     │        ├── changelog.md  （版本变更日志）
     │        ├── readme.md     （github 专属详细说明）

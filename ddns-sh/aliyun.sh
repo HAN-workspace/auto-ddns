@@ -11,7 +11,7 @@ typeMode=$5
 # echo "aliyunVar_subDomain: ${#SubDomainArray[@]}"
 # echo "aliyunVar_typeMode: $typeMode"
 
-# 解析 RAM 配置文件
+# 解析 [Auth] 配置项
 for dict in "${ramArray[@]}"; do
     if [[ $dict == aliyun_ID=* ]]; then
         Ali_ID="${dict#*=}"

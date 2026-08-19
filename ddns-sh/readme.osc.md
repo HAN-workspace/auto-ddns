@@ -4,14 +4,15 @@
 系统：linux <br>
 shell：bash <br>
 依赖：curl 及 openssl
- 
+
 ### 工作目录：
   默认在 `~/ddns-sh/` 路径下工作，若自定请修改 main.sh 的第 4 行
 
 ### 必需文件：
-- **[main.sh](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/main.sh)** 主脚本，判断公网IP是否发生变化的逻辑，读取配置，调用对应的域名托管商的交互脚本。如：aliyun.sh、cloudflare.sh
+- **[main.sh](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/main.sh)** 主脚本，判断公网IP是否发生变化的逻辑，读取配置，调用对应的域名托管商的交互脚本。如：aliyun.sh、cloudflare.sh、tencent.sh
 - **[aliyun.sh](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/aliyun.sh)** 与*阿里云*交互的 API 脚本，进行主机记录的增删改查操作
 - **[cloudflare.sh](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/cloudflare.sh)** 与*cloudflare*交互的 API 脚本，进行主机记录的增删改查操作
+- **[tencent.sh](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/tencent.sh)** 与*腾讯云*交互的 API 脚本，进行主机记录的增删改查操作
 - **[domain name](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/example.com.cn)** 配置文件 [参考示例](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.osc.md#domain-%E5%86%85%E7%BB%93%E6%9E%84) 编写属于你的专用配置<br>
 此文件名需用你的域名命名 ( *[example.com.cn](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/example.com.cn)* )
 - **info.log** 记录：公网IP发生变化、向 *DNS 域名托管商* 交互时的错误信息、更新/新增/删除主机记录的操作也会记录
@@ -48,9 +49,11 @@ crontab -e
 ### 配置示例：abc.com
 ```txt
 [Auth]
+# （ aliyun / cloudflare / tencent  只能使用一个域名托管商）
 # aliyun_ID=abcdefghijk
 # aliyun_Secret=lnmopqrstuvwxyx
-# （ aliyun / cloudflare 只能使用一个域名托管商）
+# tencent_ID=idIDidIDidIDidID
+# tencent_KEY=KEYkeyKEYkeyKEYkeyKEYkey
 cloudflare_Accunt=123456789
 cloudflare_Token=09876543210
 cloudflare_zoneID=a0b9c8d7e6f5a4b3c2d1e0
@@ -82,13 +85,17 @@ truenas=true
 aliyun_ID= <br>
 aliyun_Secret= <br>
 或<br>
+tencent_ID= <br>
+tencent_KEY= <br>
+或<br>
 cloudflare_Accunt= <br>
 cloudflare_Token= <br>
 **若使用Global API Key，这里都用 cloudflare_Token 传入**<br>
 cloudflare_zoneID= <br>
 **可选项（填写 zoneID 会更好）**<br>
 
-使用以域名托管商名字定义 key 调用对应的域名托管商的交互脚本。（ 目前支持 aliyun、cloudflare ）<br>
+<font color="red">**重要：建议登陆对应的域名托管商网站，新建专用子用户 ( 阿里叫RAM、腾讯叫CAM、cloudflare叫Accunt/Token )，且限制仅能进行DNS记录操作权限。**<font><br>
+（ 目前支持 aliyun、cloudflare、tencent ）<br>
 [返回示例](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.osc.md#domain-%E5%86%85%E7%BB%93%E6%9E%84)
 
 #### 【Direct】<br>
@@ -167,5 +174,5 @@ reverseProxy=“反向代理服务器的IPv6后缀” 本条目是为配置在�
 注意：因 CF代理 配置的地址高于 你的公网地址，所以慎用，建议【IPv4】【IPv6】【Direct】内的不要用相同的主机记录名字<br><br>
 
 重要：CF代理 默认转发 80 443 端口的流量到源服务器，当你被 ISP 封这两个端口时，CF代理转发的流量会失败 <br>
-解决：登陆 CF 控制台，找到你的域名，“规则” -> "创建规则" -> "Origin Rules"，把 80 端口重写到 “5647” 或 443 端口重写到 ”55555” <br>
+解决：登陆 CF 控制台，找到你的域名，“规则” -> "创建规则" -> "Origin Rules"，如：把 80 端口重写到 “5647” 或 443 端口重写到 ”55555” <br>
 [返回示例](https://gitee.com/HAN-workspace/auto-ddns/blob/main/ddns-sh/readme.osc.md#domain-%E5%86%85%E7%BB%93%E6%9E%84)
